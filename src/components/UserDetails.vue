@@ -50,13 +50,28 @@
 </template>
 
 <script>
+import moment from "moment";
 import usersJson from '../JsonStore/users.json'
 import ticketsJson from '../JsonStore/tickets.json'
 import organizationsJson from '../JsonStore/organizations.json'
 export default {
   data(){
     return{
-      userId:localStorage.getItem('userId')
+      userId:localStorage.getItem('userId'),
+      tickets:ticketsJson.map(obj=>{
+        obj.created_at = obj.created_at ? obj.created_at.split(' -')[0] : ''
+        obj.created_at = obj.created_at ? moment(obj.created_at).format('YYYY-MM-DD HH:mm') : ''
+
+        obj.due_at = obj.due_at ? obj.due_at.split(' -')[0] : ''
+        obj.due_at = obj.due_at ? moment(obj.due_at).format('YYYY-MM-DD HH:mm') : ''
+
+        return obj
+      }),
+      organizations:organizationsJson.map(obj=>{
+        obj.created_at = obj.created_at ? obj.created_at.split(' -')[0] : ''
+        obj.created_at = obj.created_at ? moment(obj.created_at).format('YYYY-MM-DD HH:mm') : ''
+        return obj
+      }),
     }
   },
   computed:{
@@ -66,12 +81,12 @@ export default {
       })
     },
     userTickets(){
-      return ticketsJson.filter(obj=>{
+      return this.tickets.filter(obj=>{
         return obj.assignee_id == this.userId
       })
     },
     userOrganization(){
-      return organizationsJson.find(obj=>{
+      return this.organizations.find(obj=>{
         return obj._id == this.user.organization_id
       }) 
     }

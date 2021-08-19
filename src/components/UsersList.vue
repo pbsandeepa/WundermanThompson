@@ -6,13 +6,13 @@
       :data="users"
       :columns="columns"
       row-key="name"
-      :filter="tpmFilter"
-      :pagination.sync="tpmPagination"
+      :filter="filter"
+      :pagination.sync="pagination"
       table-header-class="bg-grey-7 text-white column-heading"
       dense
       >
       <template v-slot:top-right>
-        <q-input dense debounce="300" v-model="tpmFilter" placeholder="Search">
+        <q-input dense debounce="300" v-model="filter" placeholder="Search">
           <template v-slot:append>
             <q-icon name="search" />
           </template>
@@ -53,8 +53,14 @@ import moment from "moment";
 export default {
   data(){
     return{
-      users:usersJson,
-      tpmFilter:'',
+      users:usersJson.map(obj=>{
+        obj.created_at = obj.created_at.split(' -')[0]
+        obj.created_at = moment(obj.created_at).format('YYYY-MM-DD HH:mm')
+        return obj
+      }).sort((a,b)=>{
+        return a.name.localeCompare(b.name);
+      }),
+      filter:'',
       columns: [
         { name: "name", label: "Name", align: "left", field: "name", sortable: true},
         { name: "created_at", label: "Created at", align: "left", field: "created_at", sortable: true},
@@ -64,7 +70,7 @@ export default {
         { name: "signature", label: "Signature", align: "left", field: "signature", sortable: false},
         { name: "details", label: "Details", align: "left", sortable: false}
       ],
-      tpmPagination: {
+      pagination: {
         sortBy: "desc",
         descending: false,
         page: 1,
